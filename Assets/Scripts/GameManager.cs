@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = 60;
-        NewGame();
+        // NewGame();
     }
 
     public void NewGame()

@@ -62,7 +62,7 @@ public class Player : MonoBehaviour
         bigRenderer.enabled = false;
         activeRenderer = smallRenderer;
 
-        capsuleCollider.size = new Vector2(1f, 2f);
+        capsuleCollider.size = new Vector2(1f, 1f);
         capsuleCollider.offset = new Vector2(0f, 0f);
 
         StartCoroutine(ScaleAnimation());

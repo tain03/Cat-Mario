@@ -8,6 +8,7 @@ public class PowerUp : MonoBehaviour
         ExtraLife,
         MagicMushroom,
         Starpower,
+        Smaller,
     }
 
     public Type type;
@@ -37,6 +38,10 @@ public class PowerUp : MonoBehaviour
 
             case Type.Starpower:
                 player.Starpower();
+                break;
+            
+            case Type.Smaller:
+                player.Shrink();
                 break;
         }
 
