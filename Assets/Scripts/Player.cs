@@ -41,8 +41,22 @@ public class Player : MonoBehaviour
         bigRenderer.enabled = false;
         deathAnimation.enabled = true;
 
-        GameManager.Instance.ResetLevel(3f);
+        // Kiểm tra nếu người chơi còn mạng để hồi sinh
+        if (GameManager.Instance.lives > 0)
+        {
+            // Reset điểm số khi hồi sinh
+            GameManager.Instance.ResetScore();
+
+            // Sau một khoảng thời gian, reset lại level và cho phép hồi sinh
+            GameManager.Instance.ResetLevel(3f); 
+        }
+        else
+        {
+            // Nếu không còn mạng, game over
+            GameManager.Instance.GameOver();
+        }
     }
+
 
     public void Grow()
     {

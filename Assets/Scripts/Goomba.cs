@@ -27,17 +27,22 @@ public class Goomba : MonoBehaviour
 
     private void Flatten()
     {
+        GameManager.Instance.AddPoints(100);
+
         GetComponent<Collider2D>().enabled = false;
         GetComponent<EntityMovement>().enabled = false;
         GetComponent<AnimatedSprite>().enabled = false;
         GetComponent<SpriteRenderer>().sprite = flatSprite;
+
         Destroy(gameObject, 0.5f);
     }
 
     private void Hit()
     {
+        GameManager.Instance.AddPoints(200);
         GetComponent<AnimatedSprite>().enabled = false;
         GetComponent<DeathAnimation>().enabled = true;
+
         Destroy(gameObject, 3f);
     }
 

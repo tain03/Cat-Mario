@@ -16,7 +16,7 @@ public class Koopa : MonoBehaviour
                 Hit();
             } else if (collision.transform.DotTest(transform, Vector2.down)) {
                 EnterShell();
-            }  else {
+            } else {
                 player.Hit();
             }
         }
@@ -50,6 +50,9 @@ public class Koopa : MonoBehaviour
     {
         shelled = true;
 
+        // Cộng điểm khi chuyển vào trạng thái vỏ (shell)
+        GameManager.Instance.AddPoints(200);
+
         GetComponent<SpriteRenderer>().sprite = shellSprite;
         GetComponent<AnimatedSprite>().enabled = false;
         GetComponent<EntityMovement>().enabled = false;
@@ -71,8 +74,13 @@ public class Koopa : MonoBehaviour
 
     private void Hit()
     {
+        // Cộng điểm khi Koopa bị tiêu diệt
+        GameManager.Instance.AddPoints(300);
+
         GetComponent<AnimatedSprite>().enabled = false;
         GetComponent<DeathAnimation>().enabled = true;
+
+        // Hủy đối tượng sau 3 giây
         Destroy(gameObject, 3f);
     }
 
@@ -82,5 +90,4 @@ public class Koopa : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
 }

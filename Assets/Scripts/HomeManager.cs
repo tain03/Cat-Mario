@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class HomeManager : MonoBehaviour
 {
-    public Button startGame; // Sửa "button" thành "Button"
+    public Button startGame; 
 
     private void Start()
     {
@@ -12,6 +12,6 @@ public class HomeManager : MonoBehaviour
 
     private void OnStartGame() // Đổi tên phương thức để không trùng tên với biến
     {
-        GameManager.Instance.NewGame();
+        GameManager.Instance.LoadLevel(1, 1);
     }
 }
