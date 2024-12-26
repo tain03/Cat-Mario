@@ -12,8 +12,8 @@ This project is a 2D platformer game built using Unity. The game features player
 
 1. **Clone the Repository**:
    ```sh
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/tain03/Cat-Mario.git
+   cd Cat-Mario
    ```
 
 2. **Open the Project in Unity**:
