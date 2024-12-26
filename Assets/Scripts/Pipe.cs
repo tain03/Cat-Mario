@@ -4,15 +4,21 @@ using UnityEngine;
 public class Pipe : MonoBehaviour
 {
     public Transform connection;
-    public KeyCode enterKeyCode = KeyCode.S;
     public Vector3 enterDirection = Vector3.down;
     public Vector3 exitDirection = Vector3.zero;
+
+    private ButtonController buttonController;
+
+    private void Awake()
+    {
+        buttonController = FindObjectOfType<ButtonController>();
+    }
 
     private void OnTriggerStay2D(Collider2D other)
     {
         if (connection != null && other.CompareTag("Player"))
         {
-            if (Input.GetKey(enterKeyCode) && other.TryGetComponent(out Player player)) {
+            if (buttonController.IsEntering() && other.TryGetComponent(out Player player)) {
                 StartCoroutine(Enter(player));
             }
         }
@@ -21,11 +27,9 @@ public class Pipe : MonoBehaviour
     private IEnumerator Enter(Player player)
     {
         player.movement.enabled = false;
-        
+
         Vector3 enteredPosition = transform.position + enterDirection;
         Vector3 enteredScale = Vector3.one * 0.5f;
-        
-        
 
         yield return Move(player.transform, enteredPosition, enteredScale);
         yield return new WaitForSeconds(1f);
@@ -69,5 +73,4 @@ public class Pipe : MonoBehaviour
         player.position = endPosition;
         player.localScale = endScale;
     }
-
 }

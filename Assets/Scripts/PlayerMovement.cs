@@ -6,9 +6,9 @@ public class PlayerMovement : MonoBehaviour
     private Camera mainCamera;
     private Rigidbody2D rb;
     private Collider2D capsuleCollider;
+    private ButtonController buttonController;
 
     private Vector2 velocity;
-    private float inputAxis;
 
     public float moveSpeed = 8f;
     public float maxJumpHeight = 5f;
@@ -18,8 +18,8 @@ public class PlayerMovement : MonoBehaviour
 
     public bool grounded { get; private set; }
     public bool jumping { get; private set; }
-    public bool running => Mathf.Abs(velocity.x) > 0.25f || Mathf.Abs(inputAxis) > 0.25f;
-    public bool sliding => (inputAxis > 0f && velocity.x < 0f) || (inputAxis < 0f && velocity.x > 0f);
+    public bool running => Mathf.Abs(velocity.x) > 0.25f;
+    public bool sliding => (velocity.x < 0f && buttonController.IsMovingRight()) || (velocity.x > 0f && buttonController.IsMovingLeft());
     public bool falling => velocity.y < 0f && !grounded;
 
     private void Awake()
@@ -27,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
         mainCamera = Camera.main;
         rb = GetComponent<Rigidbody2D>();
         capsuleCollider = GetComponent<Collider2D>();
+        buttonController = FindObjectOfType<ButtonController>();
     }
 
     private void OnEnable()
@@ -60,11 +61,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Move mario based on his velocity
         Vector2 position = rb.position;
         position += velocity * Time.fixedDeltaTime;
 
-        // Clamp within the screen bounds
         Vector2 leftEdge = mainCamera.ScreenToWorldPoint(Vector2.zero);
         Vector2 rightEdge = mainCamera.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
         position.x = Mathf.Clamp(position.x, leftEdge.x + 0.5f, rightEdge.x - 0.5f);
@@ -74,16 +73,23 @@ public class PlayerMovement : MonoBehaviour
 
     private void HorizontalMovement()
     {
-        // Accelerate / decelerate
-        inputAxis = Input.GetAxis("Horizontal");
-        velocity.x = Mathf.MoveTowards(velocity.x, inputAxis * moveSpeed, moveSpeed * Time.deltaTime);
+        if (buttonController.IsMovingLeft())
+        {
+            velocity.x = -moveSpeed;
+        }
+        else if (buttonController.IsMovingRight())
+        {
+            velocity.x = moveSpeed;
+        }
+        else
+        {
+            velocity.x = 0f;
+        }
 
-        // Check if running into a wall
         if (rb.Raycast(Vector2.right * velocity.x)) {
             velocity.x = 0f;
         }
 
-        // Flip sprite to face direction
         if (velocity.x > 0f) {
             transform.eulerAngles = Vector3.zero;
         } else if (velocity.x < 0f) {
@@ -93,12 +99,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void GroundedMovement()
     {
-        // Prevent gravity from infinitly building up
         velocity.y = Mathf.Max(velocity.y, 0f);
         jumping = velocity.y > 0f;
 
-        // Perform jump
-        if (Input.GetButtonDown("Jump"))
+        if (buttonController.IsJumping())
         {
             velocity.y = jumpForce;
             jumping = true;
@@ -107,11 +111,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void ApplyGravity()
     {
-        // Check if falling
-        bool falling = velocity.y < 0f || !Input.GetButton("Jump");
+        bool falling = velocity.y < 0f || !buttonController.IsJumping();
         float multiplier = falling ? 2f : 1f;
 
-        // Apply gravity and terminal velocity
         velocity.y += gravity * multiplier * Time.deltaTime;
         velocity.y = Mathf.Max(velocity.y, gravity / 2f);
     }
@@ -120,7 +122,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            // Bounce off enemy head
             if (transform.DotTest(collision.transform, Vector2.down))
             {
                 velocity.y = jumpForce / 2f;
@@ -129,11 +130,9 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (collision.gameObject.layer != LayerMask.NameToLayer("PowerUp"))
         {
-            // Stop vertical movement if mario bonks his head
             if (transform.DotTest(collision.transform, Vector2.up)) {
                 velocity.y = 0f;
             }
         }
     }
-
 }

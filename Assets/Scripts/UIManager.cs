@@ -6,7 +6,7 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; } // Singleton Instance
 
     public TextMeshProUGUI scoreText;
-    [SerializeField] private TextMeshProUGUI livesText;
+    [SerializeField] private TextMeshProUGUI healthText;  // Thay livesText thành healthText
 
     private void Awake()
     {
@@ -34,15 +34,15 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateLivesText(int lives)
+    public void UpdateHealthText(int healthPoints)  // Cập nhật HP thay vì lives
     {
-        if (livesText != null)
+        if (healthText != null)
         {
-            livesText.text = "LIVE: X" + lives.ToString(); // Cập nhật lại số mạng
+            healthText.text = "HP: " + healthPoints.ToString(); // Hiển thị HP thay vì mạng
         }
         else
         {
-            Debug.LogWarning("Lives Text is not assigned in the UIManager.");
+            Debug.LogWarning("Health Text is not assigned in the UIManager.");
         }
     }
 }

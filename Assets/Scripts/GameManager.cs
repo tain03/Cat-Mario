@@ -10,13 +10,12 @@ public class GameManager : MonoBehaviour
 
     public int world { get; private set; } = 1;
     public int stage { get; private set; } = 1;
-    public int lives { get; private set; } = 3;
+    public int healthPoints { get; private set; } = 100;  // Sử dụng HP thay cho lives
     public int coins { get; private set; } = 0;
     public int score { get; private set; } = 0;
 
-    [SerializeField] private TextMeshProUGUI livesText;
+    [SerializeField] private TextMeshProUGUI healthText;  // Text hiển thị HP
     public bool resetting { get; private set; } = false; // Trạng thái đang reset level
-
 
     private void Awake()
     {
@@ -38,23 +37,22 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = 60;
-        UpdateLivesText();
+        UpdateHealthText();  // Cập nhật HP khi bắt đầu game
     }
 
     public void NewGame()
     {
-        lives = 3; // Đặt lại mạng sống
+        healthPoints = 100; // Đặt lại HP ban đầu
         coins = 0;
         score = 0;
         UIManager.Instance.UpdateScore(score);
-        UIManager.Instance.UpdateLivesText(lives); // Cập nhật UI với số mạng khi bắt đầu game
+        UIManager.Instance.UpdateHealthText(healthPoints);  // Cập nhật UI với HP
         LoadLevel(1, 1); // Tải lại level
     }
 
-
     public void GameOver()
     {
-        NewGame();
+        NewGame();  // Reset lại game khi hết HP
     }
 
     public void LoadLevel(int world, int stage)
@@ -83,40 +81,41 @@ public class GameManager : MonoBehaviour
         resetting = true; // Đánh dấu đang reset level
         Debug.Log("Waiting for " + delay + " seconds before resetting...");
         yield return new WaitForSeconds(delay);
-        Debug.Log("Before reset, lives: " + lives);
-        lives--; // Giảm mạng
-        UIManager.Instance.UpdateLivesText(lives); // Cập nhật lại UI mạng sau khi giảm
-        UIManager.Instance.UpdateScore(score);
+        Debug.Log("Before reset, HP: " + healthPoints);
         
-        Debug.Log("After reset, lives: " + lives);
+        healthPoints -= 10; // Giảm HP sau mỗi lần reset
+        UIManager.Instance.UpdateHealthText(healthPoints); // Cập nhật lại UI HP sau khi giảm
+        UIManager.Instance.UpdateScore(score);
 
-        if (lives > 0)
+        Debug.Log("After reset, HP: " + healthPoints);
+
+        if (healthPoints > 0)
         {
             Debug.Log("Respawning player at current level...");
             LoadLevel(world, stage); // Hồi sinh ở level hiện tại
         }
         else
         {
-            Debug.Log("Game Over! No lives left.");
-            GameOver(); // Nếu hết mạng, kết thúc trò chơi
+            Debug.Log("Game Over! No HP left.");
+            GameOver(); // Nếu hết HP, kết thúc trò chơi
         }
 
         resetting = false; // Reset hoàn tất
     }
 
-    public void AddLife()
+    public void AddLife()  // Hàm này có thể giữ lại nếu bạn vẫn muốn thêm mạng vào game
     {
-        lives++;
-        Debug.Log("Life added, new lives: " + lives);
-        UpdateLivesText();
+        healthPoints += 10;  // Mỗi mạng cộng thêm 10 HP
+        Debug.Log("Life added, new HP: " + healthPoints);
+        UpdateHealthText();
     }
 
-    private void UpdateLivesText()
+    private void UpdateHealthText()
     {
-        if (livesText != null)
+        if (healthText != null)
         {
-            livesText.text = "LIVE: X" + lives;
-            Debug.Log("Lives UI updated: " + lives); // In ra số mạng hiện tại trong UI
+            healthText.text = "HP: " + healthPoints;
+            Debug.Log("Health UI updated: " + healthPoints); // In ra số HP hiện tại trong UI
         }
     }
 
@@ -128,7 +127,7 @@ public class GameManager : MonoBehaviour
         if (coins == 100)
         {
             coins = 0;
-            AddLife();
+            AddLife();  // Cộng thêm mạng nếu đủ 100 coins
         }
     }
 
